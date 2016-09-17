@@ -4,6 +4,7 @@ module Time where
 
 -- Code from quickcheck-instances package
 
+import Control.Monad
 import Test.QuickCheck
 import Test.QuickCheck.Function
 
@@ -71,7 +72,7 @@ instance Arbitrary Time.TimeZone where
         Time.TimeZone
          <$> choose (-12*60,14*60) -- utc offset (m)
          <*> arbitrary -- is summer time
-         <*> (sequence . replicate 4 $ choose ('A','Z'))
+         <*> (replicateM 4 $ choose ('A','Z'))
     shrink tz@(Time.TimeZone minutes summerOnly name) =
         [ tz { Time.timeZoneMinutes    = m' } | m' <- shrink minutes    ] ++
         [ tz { Time.timeZoneSummerOnly = s' } | s' <- shrink summerOnly ] ++
