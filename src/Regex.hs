@@ -21,8 +21,8 @@ import Data.Char (chr)
 data Pep = Pep Int
 
 data Regex = Sym Char
-           | InRange [Char]
-           | NotInRange [Char]
+           | InRange String
+           | NotInRange String
            | Alt Regex Regex
            | Seq Regex Regex
            | Rep Regex
@@ -53,11 +53,11 @@ $(devArbitrary ''Regex)
 -}
 instance Show Regex where
   show (Sym s)  =  [s]
-  show (Alt p q)  =  "(" ++ (show p) ++ "|" ++ (show q) ++ ")"
-  show (Seq p q) = (show p) ++ (show q)
-  show (Rep r)    =  "(" ++ (show  r) ++ ")*"
-  show (Plus r)    =  "(" ++ (show  r) ++ ")+"
-  show (OrNothing r)    =  "(" ++ (show  r) ++ ")?"
+  show (Alt p q)  =  "(" ++ show p ++ "|" ++ show q ++ ")"
+  show (Seq p q) = show p ++ show q
+  show (Rep r)    =  "(" ++ show  r ++ ")*"
+  show (Plus r)    =  "(" ++ show  r ++ ")+"
+  show (OrNothing r)    =  "(" ++ show  r ++ ")?"
   show (InRange r)    =  "[" ++ (r :: String) ++ "]"
   show (NotInRange r)    =  "[^" ++ (r :: String) ++ "]"
 
