@@ -6,7 +6,6 @@ import Test.QuickCheck
 
 import Data.Binary( Binary(..), encode )
 
-import Codec.Picture.Types
 import Codec.Picture.Tiff
 import Codec.Picture.Tiff.Types
 import Codec.Picture.Types

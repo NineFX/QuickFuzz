@@ -93,7 +93,7 @@ instance Arbitrary MPy where
   arbitrary = do a <- sized go
                  evalStateT (fix a) (initV :: StV (Ident ()))
               where
-                 go n = Module <$> (listOf $ (resize (n `div` 10) arbitrary))
+                 go n = Module <$> listOf $ resize (n `div` 10) arbitrary
 
 instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Ident a) where --easy to read instance
      arbitrary = sized go {->>= fixUp-} where
@@ -113,7 +113,7 @@ gFloat b = do i <- arbitrary
 
 instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Expr a) where
      arbitrary = sized go where
-           go n | (n <= 1) = oneof
+           go n | n <= 1 = oneof
                                [Var <$> resize n arbitrary <*> resize n arbitrary,
                                 gInt True,
                                 gInt False,
@@ -122,16 +122,16 @@ instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Expr a) where
                                 Bool <$> resize n arbitrary <*> resize n arbitrary,
                                 None <$> resize n arbitrary,
                                 Ellipsis <$> resize n arbitrary,
-                                ByteStrings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                ByteStrings <$> listOf $ resize (n `div` 10) arbitrary
                                             <*> resize n arbitrary,
-                                Strings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                Strings <$> listOf $ resize (n `div` 10) arbitrary
                                         <*> resize n arbitrary,
-                                UnicodeStrings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                UnicodeStrings <$> listOf $ resize (n `div` 10) arbitrary
                                                <*> resize n arbitrary,
                                 Yield <$> resize n arbitrary <*> resize n arbitrary,
                                 {-Generator <$> resize n arbitrary <*> resize n arbitrary,-}
                                 {-ListComp <$> resize n arbitrary <*> resize n arbitrary,-}
-                                Dictionary <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                Dictionary <$> listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary{-,
                                 DictComp <$> resize n arbitrary <*> resize n arbitrary,
                                 SetComp <$> resize n arbitrary <*> resize n arbitrary-}]
@@ -143,19 +143,19 @@ instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Expr a) where
                                       (2, Bool <$> resize n arbitrary <*> resize n arbitrary),
                                       (2, None <$> resize n arbitrary),
                                       (2, Ellipsis <$> resize n arbitrary),
-                                      (2, ByteStrings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, ByteStrings <$> listOf $ resize (n `div` 10) arbitrary
                                                       <*> resize n arbitrary),
-                                      (2, Strings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Strings <$> listOf $ resize (n `div` 10) arbitrary
                                                   <*> resize n arbitrary),
-                                      (2, UnicodeStrings <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, UnicodeStrings <$> listOf $ resize (n `div` 10) arbitrary
                                                          <*> resize n arbitrary),
                                       (1, Call <$> go (n - 1)
-                                               <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                               <*> listOf $ resize (n `div` 10) arbitrary
                                                <*> resize n arbitrary),
                                       (1, Subscript <$> go (n `div` 2) <*> go (n `div` 2)
                                                     <*> resize n arbitrary),
                                       (1, SlicedExpr <$> go (n - 1)
-                                                     <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                                     <*> listOf $ resize (n `div` 10) arbitrary
                                                      <*> resize n arbitrary),
                                       (1, CondExpr <$> go (n `div` 3) <*> go (n `div` 3)
                                                    <*> go (n `div` 3) <*> resize n arbitrary),
@@ -165,19 +165,19 @@ instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Expr a) where
                                                   <*> resize n arbitrary),
                                       (1, Dot <$> go (n - 1) <*> resize n arbitrary
                                               <*> resize n arbitrary),
-                                      (1, Lambda <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (1, Lambda <$> listOf $ resize (n `div` 10) arbitrary
                                                  <*> go (n - 1) <*> resize n arbitrary),
-                                      (1, Tuple <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (1, Tuple <$> listOf $ resize (n `div` 10) arbitrary
                                                 <*> resize n arbitrary),
                                       (2, Yield <$> resize n arbitrary <*> resize n arbitrary),
                                       {-(2, Generator <$> resize n arbitrary <*> resize n arbitrary),-}
                                       {-(2, ListComp <$> resize n arbitrary <*> resize n arbitrary),-}
-                                      (1, List <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (1, List <$> listOf $ resize (n `div` 10) arbitrary
                                                <*> resize n arbitrary),
-                                      (2, Dictionary <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Dictionary <$> listOf $ resize (n `div` 10) arbitrary
                                                      <*> resize n arbitrary),
                                       {-(2, DictComp <$> resize n arbitrary <*> resize n arbitrary),-}
-                                      (1, Set <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (1, Set <$> listOf $ resize (n `div` 10) arbitrary
                                               <*> resize n arbitrary),
                                       {-(2, SetComp <$> resize n arbitrary <*> resize n arbitrary),-}
                                       (1, Starred <$> go (n - 1) <*> resize n arbitrary),
@@ -187,102 +187,102 @@ instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Expr a) where
 oneVar :: Arbitrary a => Gen (Expr a)
 oneVar = Var <$> arbitrary <*> arbitrary
 
-lOfOneVar :: Arbitrary a => Gen [(Expr a)]
+lOfOneVar :: Arbitrary a => Gen [Expr a]
 lOfOneVar = do ov <- oneVar
                return [ov]
 
 instance {-# OVERLAPPING #-} Arbitrary a => Arbitrary (Statement a) where
      arbitrary = sized go where
-           go n | (n <= 1) = oneof [Import <$> (listOf $ (resize (n `div` 10) arbitrary))
+           go n | n <= 1 = oneof [Import <$> listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary,
-                                    FromImport <$> resize n arbitrary <*> resize n arbitrary
+                                  FromImport <$> resize n arbitrary <*> resize n arbitrary
                                                <*> resize n arbitrary,
-                                    While <$> resize n arbitrary <*> resize n arbitrary
+                                  While <$> resize n arbitrary <*> resize n arbitrary
                                           <*> resize n arbitrary <*> resize n arbitrary,
-                                    For <$> lOfOneVar --(listOf $ (resize (n `div` 10) arbitrary))
+                                  For <$> lOfOneVar --listOf $ resize (n `div` 10) arbitrary
                                         <*> resize n arbitrary <*> resize n arbitrary
                                         <*> resize n arbitrary <*> resize n arbitrary,
-                                    Fun <$> resize n arbitrary <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Fun <$> resize n arbitrary <*> listOf $ resize (n `div` 10) arbitrary
                                         <*> resize n arbitrary <*> resize n arbitrary
                                         <*> resize n arbitrary,
-                                    Class <$> resize n arbitrary
-                                          <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Class <$> resize n arbitrary
+                                          <*> listOf $ resize (n `div` 10) arbitrary
                                           <*> resize n arbitrary <*> resize n arbitrary,
-                                    Conditional <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Conditional <$> listOf $ resize (n `div` 10) arbitrary
                                                 <*> resize n arbitrary <*> resize n arbitrary,
-                                    Assign <$> lOfOneVar --(listOf $ (resize (n `div` 10) arbitrary))
+                                  Assign <$> lOfOneVar --listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary <*> resize n arbitrary,
-                                    AugmentedAssign <$> resize n arbitrary <*> resize n arbitrary
+                                  AugmentedAssign <$> resize n arbitrary <*> resize n arbitrary
                                                     <*> resize n arbitrary <*> resize n arbitrary,
-                                    Return <$> resize n arbitrary <*> resize n arbitrary,
-                                    Try <$> resize n arbitrary <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Return <$> resize n arbitrary <*> resize n arbitrary,
+                                  Try <$> resize n arbitrary <*> listOf $ resize (n `div` 10) arbitrary
                                         <*> resize n arbitrary <*> resize n arbitrary
                                         <*> resize n arbitrary,
-                                    Raise <$> resize n arbitrary <*> resize n arbitrary,
-                                    With <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Raise <$> resize n arbitrary <*> resize n arbitrary,
+                                  With <$> listOf $ resize (n `div` 10) arbitrary
                                          <*> resize n arbitrary <*> resize n arbitrary,
-                                    Pass <$> resize n arbitrary,
-                                    Break <$> resize n arbitrary,
-                                    Continue <$> resize n arbitrary,
-                                    Delete <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Pass <$> resize n arbitrary,
+                                  Break <$> resize n arbitrary,
+                                  Continue <$> resize n arbitrary,
+                                  Delete <$> listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary,
-                                    StmtExpr <$> resize n arbitrary <*> resize n arbitrary,
-                                    Global <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  StmtExpr <$> resize n arbitrary <*> resize n arbitrary,
+                                  Global <$> listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary,
-                                    NonLocal <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  NonLocal <$> listOf $ resize (n `div` 10) arbitrary
                                              <*> resize n arbitrary,
-                                    Assert <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Assert <$> listOf $ resize (n `div` 10) arbitrary
                                            <*> resize n arbitrary,
-                                    Print <$> resize n arbitrary <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                  Print <$> resize n arbitrary <*> listOf $ resize (n `div` 10) arbitrary
                                           <*> resize n arbitrary <*> resize n arbitrary,
-                                    Exec <$> resize n arbitrary <*> resize n arbitrary
+                                  Exec <$> resize n arbitrary <*> resize n arbitrary
                                          <*> resize n arbitrary]
-             | otherwise = frequency [(2, Import <$> (listOf $ (resize (n `div` 10) arbitrary))
+             | otherwise = frequency [(2, Import <$> listOf $ resize (n `div` 10) arbitrary
                                                  <*> resize n arbitrary),
                                       (2, FromImport <$> resize n arbitrary <*> resize n arbitrary
                                                      <*> resize n arbitrary),
                                       (2, While <$> resize n arbitrary <*> resize n arbitrary
                                                 <*> resize n arbitrary <*> resize n arbitrary),
-                                      (2, For <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, For <$> listOf $ resize (n `div` 10) arbitrary
                                               <*> resize n arbitrary <*> resize n arbitrary
                                               <*> resize n arbitrary <*> resize n arbitrary),
                                       (2, Fun <$> resize n arbitrary
-                                              <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                              <*> listOf $ resize (n `div` 10) arbitrary
                                               <*> resize n arbitrary <*> resize n arbitrary
                                               <*> resize n arbitrary),
                                       (2, Class <$> resize n arbitrary
-                                                <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                                <*> listOf $ resize (n `div` 10) arbitrary
                                                 <*> resize n arbitrary <*> resize n arbitrary),
-                                      (2, Conditional <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Conditional <$> listOf $ resize (n `div` 10) arbitrary
                                                       <*> resize n arbitrary <*> resize n arbitrary),
-                                      (2, Assign <$> lOfOneVar --(listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Assign <$> lOfOneVar --listOf $ resize (n `div` 10) arbitrary
                                                  <*> resize n arbitrary <*> resize n arbitrary),
                                       (2, AugmentedAssign <$> resize n arbitrary <*> resize n arbitrary
                                                           <*> resize n arbitrary <*> resize n arbitrary),
-                                      (1, Decorated <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (1, Decorated <$> listOf $ resize (n `div` 10) arbitrary
                                                     <*> go (n - 1) <*> resize n arbitrary),
                                       (2, Return <$> resize n arbitrary <*> resize n arbitrary),
                                       (2, Try <$> resize n arbitrary
-                                              <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                              <*> listOf $ resize (n `div` 10) arbitrary
                                               <*> resize n arbitrary <*> resize n arbitrary
                                               <*> resize n arbitrary),
                                       (2, Raise <$> resize n arbitrary <*> resize n arbitrary),
-                                      (2, With <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, With <$> listOf $ resize (n `div` 10) arbitrary
                                                <*> resize n arbitrary <*> resize n arbitrary),
                                       (2, Pass <$> resize n arbitrary),
                                       (2, Break <$> resize n arbitrary),
                                       (2, Continue <$> resize n arbitrary),
-                                      (2, Delete <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Delete <$> listOf $ resize (n `div` 10) arbitrary
                                                  <*> resize n arbitrary),
                                       (2, StmtExpr <$> resize n arbitrary <*> resize n arbitrary),
-                                      (2, Global <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Global <$> listOf $ resize (n `div` 10) arbitrary
                                                  <*> resize n arbitrary),
-                                      (2, NonLocal <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, NonLocal <$> listOf $ resize (n `div` 10) arbitrary
                                                    <*> resize n arbitrary),
-                                      (2, Assert <$> (listOf $ (resize (n `div` 10) arbitrary))
+                                      (2, Assert <$> listOf $ resize (n `div` 10) arbitrary
                                                  <*> resize n arbitrary),
                                       (2, Print <$> resize n arbitrary
-                                                <*> (listOf $ (resize (n `div` 10) arbitrary))
+                                                <*> listOf $ resize (n `div` 10) arbitrary
                                                 <*> resize n arbitrary <*> resize n arbitrary),
                                       (2, Exec <$> resize n arbitrary <*> resize n arbitrary
                                                <*> resize n arbitrary)]
