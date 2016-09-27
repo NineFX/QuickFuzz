@@ -201,6 +201,7 @@ dispatch arg = do
 -- system
 safetyChecks :: MainArgs -> IO ()
 safetyChecks args = do
+    when (not findPar args && mayUseStdIn args && not usesFile args) $ print "You're testing a program via standard in. Maybe try the parallel flag?"
     return ()
     --cmdex <- findExecutable cmd
     --unless (isJust cmdex) (die $ "The command \"" ++ cmd ++ "\" is not present.")
