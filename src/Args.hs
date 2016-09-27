@@ -56,10 +56,10 @@ formatArgs args = case (splitCmd args, findFileName args) of
                     (Just (l,r), name) -> \x -> args {findCmds = l ++ x ++ name ++ r}
                     _   -> \x -> args {findFileName = ""}
 
-usesFile :: MainArgs -> Boolean
+usesFile :: MainArgs -> Bool
 usesFile args = if "@@" `isInfixOf` (findCmds args)
                     then True
                     else False
 
-mayUseStdIn :: MainArgs -> Boolean
-mayUseStdIn args = (findAct args) `elem` [, "radamsa", "check", ""]
+mayUseStdIn :: MainArgs -> Bool
+mayUseStdIn args = (findAct args) `elem` ["zzuf", "radamsa", "check"]
