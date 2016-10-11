@@ -5,6 +5,7 @@ machine:
 dependencies:
   cache_directories:
     - "~/.stack"
+    - "~/.stack-work"
     - "~/.cabal"
   pre:
     - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 575159689BEFB442
